@@ -157,7 +157,7 @@ function Link(props: React.PropsWithChildren<LinkProps>) {
       passHref: true,
       prefetch: true,
       locale: true,
-      hardShallow: true
+      hardShallow: true,
     } as const
     const optionalProps: LinkPropsOptional[] = Object.keys(
       optionalPropsGuard
@@ -186,7 +186,8 @@ function Link(props: React.PropsWithChildren<LinkProps>) {
         key === 'scroll' ||
         key === 'shallow' ||
         key === 'passHref' ||
-        key === 'prefetch'
+        key === 'prefetch' ||
+        key === 'hardShallow'
       ) {
         if (props[key] != null && valType !== 'boolean') {
           throw createPropError({
@@ -294,7 +295,17 @@ function Link(props: React.PropsWithChildren<LinkProps>) {
         child.props.onClick(e)
       }
       if (!e.defaultPrevented) {
-        linkClicked(e, router, href, as, replace, shallow, scroll, locale, hardShallow)
+        linkClicked(
+          e,
+          router,
+          href,
+          as,
+          replace,
+          shallow,
+          scroll,
+          locale,
+          hardShallow
+        )
       }
     },
   }
