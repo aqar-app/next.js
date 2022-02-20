@@ -29,6 +29,7 @@ export type LinkProps = {
   passHref?: boolean
   prefetch?: boolean
   locale?: string | false
+  hardShallow?: boolean
 }
 type LinkPropsRequired = RequiredKeys<LinkProps>
 type LinkPropsOptional = OptionalKeys<LinkProps>
@@ -82,7 +83,8 @@ function linkClicked(
   replace?: boolean,
   shallow?: boolean,
   scroll?: boolean,
-  locale?: string | false
+  locale?: string | false,
+  hardShallow?: boolean
 ): void {
   const { nodeName } = e.currentTarget
 
@@ -101,6 +103,7 @@ function linkClicked(
     shallow,
     locale,
     scroll,
+    hardShallow,
   })
 }
 
@@ -154,6 +157,7 @@ function Link(props: React.PropsWithChildren<LinkProps>) {
       passHref: true,
       prefetch: true,
       locale: true,
+      hardShallow: true
     } as const
     const optionalProps: LinkPropsOptional[] = Object.keys(
       optionalPropsGuard
@@ -219,7 +223,7 @@ function Link(props: React.PropsWithChildren<LinkProps>) {
     }
   }, [router, props.href, props.as])
 
-  let { children, replace, shallow, scroll, locale } = props
+  let { children, replace, shallow, scroll, locale, hardShallow } = props
 
   if (typeof children === 'string') {
     children = <a>{children}</a>
@@ -290,7 +294,7 @@ function Link(props: React.PropsWithChildren<LinkProps>) {
         child.props.onClick(e)
       }
       if (!e.defaultPrevented) {
-        linkClicked(e, router, href, as, replace, shallow, scroll, locale)
+        linkClicked(e, router, href, as, replace, shallow, scroll, locale, hardShallow)
       }
     },
   }

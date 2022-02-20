@@ -48,10 +48,12 @@ declare global {
 
 interface RouteProperties {
   shallow: boolean
+  hardShallow: boolean
 }
 
 interface TransitionOptions {
   shallow?: boolean
+  hardShallow?: boolean
   locale?: string | false
   scroll?: boolean
 }
@@ -1018,8 +1020,8 @@ export default class Router implements BaseRouter {
       performance.mark('routeChange')
     }
 
-    const { shallow = false, scroll = true } = options
-    const routeProps = { shallow }
+    const { shallow = false, scroll = true, hardShallow = false } = options
+    const routeProps = { shallow, hardShallow }
 
     if (this._inFlightRoute) {
       this.abortComponentLoad(this._inFlightRoute, routeProps)
@@ -1315,7 +1317,7 @@ export default class Router implements BaseRouter {
             query,
             as,
             resolvedAs,
-            { shallow: false },
+            { shallow: false, hardShallow: false },
             nextState.locale,
             nextState.isPreview
           )
@@ -1506,6 +1508,7 @@ export default class Router implements BaseRouter {
     try {
       const existingRouteInfo: PrivateRouteInfo | undefined =
         this.components[route]
+      // myTODO: add hardShallow to this condition
       if (routeProps.shallow && existingRouteInfo && this.route === route) {
         return existingRouteInfo
       }
@@ -1553,7 +1556,8 @@ export default class Router implements BaseRouter {
         })
       }
 
-      const props = await this._getData<CompletePrivateRouteInfo>(() =>
+      const props = __N_SSP && routeProps.hardShallow
+        ? { pageProps: {}, __N_SSP: true } : await this._getData<CompletePrivateRouteInfo>(() =>
         __N_SSG || __N_SSP
           ? fetchNextData(
               dataHref!,
